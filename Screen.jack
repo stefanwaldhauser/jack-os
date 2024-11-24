@@ -1,0 +1,155 @@
+class Screen {
+    static boolean color;
+    static Array screen;
+    static Array twoToThe;
+
+    function void init() {
+        let screen = 16384;
+        let color = true;    // Default color is black
+
+        let twoToThe = Array.new(16);
+        let twoToThe[0] = 1;
+        let twoToThe[1] = 2;
+        let twoToThe[2] = 4;
+        let twoToThe[3] = 8;
+        let twoToThe[4] = 16;
+        let twoToThe[5] = 32;
+        let twoToThe[6] = 64;
+        let twoToThe[7] = 128;
+        let twoToThe[8] = 256;
+        let twoToThe[9] = 512;
+        let twoToThe[10] = 1024;
+        let twoToThe[11] = 2048;
+        let twoToThe[12] = 4096;
+        let twoToThe[13] = 8192;
+        let twoToThe[14] = 16384;
+        let twoToThe[15] = 16384 + 16384;
+        return;
+    }
+
+    function void setColor(boolean b) {
+        let color = b;
+        return;
+    }
+
+    function void drawPixel(int x, int y) {
+        var int address, mask, value;
+
+        if ((x < 0) | (x > 511) | (y < 0) | (y > 255)) {
+            do Sys.error(7);
+        }
+
+        let address = (y * 32) + (x / 16);
+        let mask = twoToThe[x & 15];  // x mod 16
+
+        if (color) {
+            let screen[address] = screen[address] | mask;
+        }
+        else {
+            let screen[address] = screen[address] & ~mask;
+        }
+        return;
+    }
+
+    function void drawLine(int x1, int y1, int x2, int y2) {
+        var int dx, dy, a, b, diff;
+        var int temp;
+
+        if ((x1 < 0) | (x1 > 511) | (y1 < 0) | (y1 > 255) |
+            (x2 < 0) | (x2 > 511) | (y2 < 0) | (y2 > 255)) {
+            do Sys.error(8);
+        }
+
+        // Ensure x1 <= x2
+        if (x1 > x2) {
+            let temp = x1;
+            let x1 = x2;
+            let x2 = temp;
+            let temp = y1;
+            let y1 = y2;
+            let y2 = temp;
+        }
+
+        let dx = x2 - x1;
+        let dy = y2 - y1;
+
+        if (dx = 0) {  // Vertical line
+            if (y1 > y2) {
+                let temp = y1;
+                let y1 = y2;
+                let y2 = temp;
+            }
+            while (~(y1 > y2)) {
+                do Screen.drawPixel(x1, y1);
+                let y1 = y1 + 1;
+            }
+            return;
+        }
+
+        let a = 0;
+        let b = 0;
+        let diff = 0;
+
+        while ((~(a > dx)) & (~(((dy > 0) & (b > dy)) | ((dy < 0) & (b < dy))))) {
+            do Screen.drawPixel(x1 + a, y1 + b);
+            if (diff < 0) {
+                let a = a + 1;
+                let diff = diff + Math.abs(dy);
+            }
+            else {
+                if (dy > 0) { let b = b + 1; }
+                else { let b = b - 1; }
+                let diff = diff - dx;
+            }
+        }
+        return;
+    }
+
+
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+        var int y;
+
+        // Validate coordinates
+        if ((x1 < 0) | (x1 > 511) | (y1 < 0) | (y1 > 255) |
+            (x2 < 0) | (x2 > 511) | (y2 < 0) | (y2 > 255) |
+            (x2 < x1) | (y2 < y1)) {
+            do Sys.error(9);
+        }
+
+        let y = y1;
+        while (~(y > y2)) {
+            do Screen.drawLine(x1, y, x2, y);
+            let y = y + 1;
+        }
+        return;
+    }
+
+    function void drawCircle(int x, int y, int r) {
+        var int dy, dx;
+
+        if ((x < 0) | (x > 511) | (y < 0) | (y > 255) | (r < 0)) {
+            do Sys.error(12);
+        }
+        if ((y + r > 255) | (y - r < 0) | (x + r > 511) | (x - r < 0)) {
+            do Sys.error(13);
+        }
+
+        let dy = -r;
+        while (~(dy > r)) {
+            let dx = Math.sqrt((r * r) - (dy * dy));
+            do Screen.drawLine(x - dx, y + dy, x + dx, y + dy);
+            let dy = dy + 1;
+        }
+        return;
+    }
+
+    function void clearScreen() {
+        var int i;
+        let i = 0;
+        while (i < 8192) {  // Screen size is 16384/2 = 8192 words
+            let screen[i] = 0;
+            let i = i + 1;
+        }
+        return;
+    }
+}

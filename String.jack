@@ -1,0 +1,108 @@
+class String {
+    field Array str;
+    field int length;
+    field int maxLength;
+
+    constructor String new(int maxLen) {
+        if (maxLen < 0) {
+            do Sys.error(14);
+        }
+        if (maxLen > 0) {
+            let str = Array.new(maxLen);
+        }
+        let length = 0;
+        let maxLength = maxLen;
+        return this;
+    }
+
+    method void dispose() {
+        if (maxLength > 0) {
+            do str.dispose();
+        }
+        return;
+    }
+
+    method int length() {
+        return length;
+    }
+
+    method char charAt(int j) {
+        if ((j < 0) | (j >= length)) {
+            do Sys.error(15);
+        }
+        return str[j];
+    }
+
+    method void setCharAt(int j, char c) {
+        if ((j < 0) | (j >= length)) {
+            do Sys.error(16);
+        }
+        let str[j] = c;
+        return;
+    }
+
+    method void appendChar(char c) {
+        if (length = maxLength) {
+            do Sys.error(17);
+        }
+        let str[length] = c;
+        let length = length + 1;
+        return;
+    }
+
+    method void eraseLastChar() {
+        if (length = 0) {
+            do Sys.error(18);
+        }
+        let length = length - 1;
+        return;
+    }
+
+    method int intValue() {
+        var int val, i, d;
+        var boolean neg;
+
+        let val = 0;
+        let i = 0;
+        let neg = false;
+
+        if ((length > 0) & (str[0] = 45)) {
+            let neg = true;
+            let i = 1;
+        }
+
+        while (i < length) {
+            let d = str[i] - 48;
+            if ((d < 0) | (d > 9)) {
+                break;
+            }
+            let val = (val * 10) + d;
+            let i = i + 1;
+        }
+
+        if (neg) {
+            return -val;
+        }
+        return val;
+    }
+
+    method void setInt(int val) {
+        let length = 0;
+        if (val < 0) {
+            let val = -val;
+            do appendChar(45);
+        }
+        do setIntHelper(val);
+        return;
+    }
+
+    method void setIntHelper(int val) {
+        var int nextVal;
+        let nextVal = val / 10;
+        if (nextVal > 0) {
+            do setIntHelper(nextVal);
+        }
+        do appendChar(48 + (val - (nextVal * 10)));
+        return;
+    }
+}

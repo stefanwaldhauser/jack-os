@@ -1,0 +1,105 @@
+class Memory {
+    static Array memory;
+    static Array freeList;
+    static int heapBase;
+
+    function void init() {
+        let memory = 0;
+        let heapBase = 2048;
+        let freeList = heapBase;
+
+        // Initialize first free block
+        let memory[heapBase] = 0;      // Next block pointer (initially null)
+        let memory[heapBase + 1] = 14334;  // Block size (16384 - 2048 - 2)
+        return;
+    }
+
+    function int peek(int address) {
+        return memory[address];
+    }
+
+    function void poke(int address, int value) {
+        let memory[address] = value;
+        return;
+    }
+
+
+    function int alloc(int size) {
+        var int block, prev, blockSize, remainingSize;
+
+        if (size < 1) {
+            do Sys.error(5);
+        }
+
+        let size = size + 2;  // Add header size
+
+        let prev = 0;
+        let block = freeList;
+
+        while (~(block = 0)) {
+            let blockSize = memory[block + 1];
+
+            if (blockSize > (size - 1)) {
+                // Calculate remaining size
+                let remainingSize = blockSize - size;
+
+                // If enough space remains, create new free block
+                if (remainingSize > 2) {  // Minimum size for a free block
+                    // Set up new free block
+                    let memory[block + size] = memory[block];     // Copy next pointer
+                    let memory[block + size + 1] = remainingSize; // Set remaining size
+
+                    // Update free list
+                    if (prev = 0) {
+                        let freeList = block + size;
+                    }
+                    else {
+                        let memory[prev] = block + size;
+                    }
+                }
+                else {
+                    // Use entire block if remainder too small
+                    if (prev = 0) {
+                        let freeList = memory[block];
+                    }
+                    else {
+                        let memory[prev] = memory[block];
+                    }
+                }
+
+                // Set up allocated block
+                let memory[block + 1] = size;
+                return block + 2;
+            }
+
+            let prev = block;
+            let block = memory[block];
+        }
+
+        do Sys.error(6);
+        return 0;
+    }
+
+    function void deAlloc(int object) {
+        var int block, current;
+
+        let block = object - 2;
+
+        if (freeList = 0) {
+            let freeList = block;
+            let memory[block] = 0;  // Set next pointer to null
+            return;
+        }
+
+        let current = freeList;
+        while (~(memory[current] = 0)) {
+            let current = memory[current];
+        }
+
+        // Add block to end
+        let memory[current] = block;
+        let memory[block] = 0;
+        return;
+    }
+
+}

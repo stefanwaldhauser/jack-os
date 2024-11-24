@@ -1,0 +1,150 @@
+class Math {
+    static Array powerTwo;
+
+    function void init() {
+        let powerTwo = Array.new(16);
+        let powerTwo[0] = 1; // 0000000000000001
+        let powerTwo[1] = 2; // 0000000000000010
+        let powerTwo[2] = 4; // 0000000000000100
+        let powerTwo[3] = 8; // 0000000000001000
+        let powerTwo[4] = 16; // and so on
+        let powerTwo[5] = 32;
+        let powerTwo[6] = 64;
+        let powerTwo[7] = 128;
+        let powerTwo[8] = 256;
+        let powerTwo[9] = 512;
+        let powerTwo[10] = 1024;
+        let powerTwo[11] = 2048;
+        let powerTwo[12] = 4096;
+        let powerTwo[13] = 8192;
+        let powerTwo[14] = 16384;
+        let powerTwo[15] = 16384 + 16384;
+        return;
+    }
+
+    function int multiply(int x, int y) {
+        var int sum, shiftedX, j;
+        let sum = 0;
+        let shiftedX = x;
+        let j = 0;
+
+        // y & powerTwo[j] is non zero if the jth bit of y is a 1, is zero if the this is not the case
+        while (j < 16) {
+            if (~((y & powerTwo[j]) = 0)) {  // Check if jth bit of y is 1
+                let sum = sum + shiftedX; // Add shifted x if bit is 1
+            }
+            let shiftedX = shiftedX + shiftedX;
+            let j = j + 1;
+        }
+        return sum;
+    }
+
+    function int divide(int x, int y) {
+        var int q, result;
+        var boolean negative;
+
+        // Handle division by zero
+        if (y = 0) {
+            do Sys.error(3); // Division by zero error
+        }
+
+        // Handle negative numbers
+        let negative = false;
+        if (x < 0) {
+            let x = Math.abs(x);
+            let negative = ~negative;
+        }
+        if (y < 0) {
+            let y = Math.abs(y);
+            let negative = ~negative;
+        }
+
+        // Main division algorithm
+        if (y > x) {
+            return 0;
+        }
+
+        let q = Math.divide(x, y + y);
+
+        if ((x - (2 * q * y)) < y) {
+            let result = q + q;
+        }
+        else {
+            let result = q + q + 1;
+        }
+
+        // Handle negative result
+        if (negative) {
+            return -result;
+        }
+        else {
+            return result;
+        }
+    }
+
+    function int sqrt(int x) {
+        var int y, j, approx, temp;
+
+        // Handle negative input
+        if (x < 0) {
+            do Sys.error(4); // Negative number error
+        }
+
+        // Handle 0 and 1 specially
+        if (x = 0) {
+            return 0;
+        }
+        if (x = 1) {
+            return 1;
+        }
+
+        // Start with y = 0
+        let y = 0;
+        let j = 7; // Since we have 16-bit integers, sqrt(max) < 2^8
+
+        // Try each bit from left to right
+        while (~(j < 0)) {
+            let approx = y + powerTwo[j];
+            let temp = Math.multiply(approx, approx);
+
+            if (~(temp > x) & (temp > 0)) { // Check temp > 0 to avoid overflow
+                let y = approx;
+            }
+
+            let j = j - 1;
+        }
+
+        return y;
+    }
+
+    function int min(int x, int y) {
+        if (x < y) {
+            return x;
+        }
+        return y;
+    }
+
+    function int max(int x, int y) {
+        if (x > y) {
+            return x;
+        }
+        return y;
+    }
+
+    function boolean isNeg(int x) {
+        return x < 0;
+    }
+
+    function int abs(int x) {
+        if (x < 0) {
+            return -x;
+        }
+        return x;
+    }
+
+
+
+
+
+
+}
